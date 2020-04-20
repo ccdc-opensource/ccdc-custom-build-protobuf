@@ -98,12 +98,15 @@ class Package(object):
 
     def create_archive(self):
         archive_name = self.install_directory.name + '.tar.gz'
-        self.system([
+        command = [
             'tar',
             'zcf',
             f'{self.source_builds_base / archive_name}', # the tar filename
             f'{self.install_directory.relative_to(self.toolbase / self.name)}',
-        ], cwd=self.toolbase / self.name # keep the name + version directory in the archive, but not the package name directory
+        ]
+        if self.windows:
+            command.insert(1,'--force-local') 
+        self.system(command, cwd=self.toolbase / self.name # keep the name + version directory in the archive, but not the package name directory
         )
 
     @property
@@ -155,7 +158,10 @@ class Package(object):
         else:
             raise AttributeError(f"Can't extract {path}")
 
-        self.system(['tar', flags, str(path)], cwd=where)
+        if self.windows:
+            self.system(['tar', '--force-local', flags, str(path)], cwd=where)
+        else:
+            self.system(['tar', flags, str(path)], cwd=where)
 
     def patch_sources(self):
         '''Override to patch source code after extraction'''
