@@ -16,7 +16,7 @@ class Package(object):
     name = None
     version = None
     _cached_sdkroot = None
-    
+
     @property
     def macos(self):
         return sys.platform == 'darwin'
@@ -44,7 +44,7 @@ class Package(object):
         return '10.12'
 
     def prepare_directories(self):
-        if not self.toolbase.exists() and self.macos:
+        if not self.toolbase.exists() and not self.windows:
             subprocess.check_output(['sudo', 'mkdir', '-p', '/opt/ccdc'])
             subprocess.check_output(['sudo', 'chown', f'{os.environ["USER"]}', '/opt/ccdc'])
         self.toolbase.mkdir(parents=True, exist_ok=True)
