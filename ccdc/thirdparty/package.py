@@ -103,7 +103,7 @@ class Package(object):
         archive_name = self.install_directory.name + '.tar.gz'
         command = [
             'tar',
-            'zcf',
+            '-zcf',
             f'{self.source_builds_base / archive_name}', # the tar filename
             f'{self.install_directory.relative_to(self.toolbase / self.name)}',
         ]
