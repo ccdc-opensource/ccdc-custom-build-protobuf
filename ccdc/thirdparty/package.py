@@ -30,7 +30,7 @@ class Package(object):
 
     @property
     def macos_sdkroot(self):
-        if not mac:
+        if not self.macos:
             return None
         if not self._cached_sdkroot:
             self._cached_sdkroot = subprocess.check_output(
