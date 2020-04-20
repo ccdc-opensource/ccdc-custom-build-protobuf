@@ -44,8 +44,8 @@ class Package(object):
 
     def prepare_directories(self):
         if not self.toolbase.exists() and self.macos:
-            subprocess.check_output(['sudo', 'mkdir', '-p', f'{self.toolbase}'])
-            subprocess.check_output(['sudo', 'chown', f'{os.environ["USER"]}', f'{self.toolbase}'])
+            subprocess.check_output(['sudo', 'mkdir', '-p', '/opt/ccdc'])
+            subprocess.check_output(['sudo', 'chown', f'{os.environ["USER"]}', '/opt/ccdc'])
         self.toolbase.mkdir(parents=True, exist_ok=True)
         self.source_downloads_base.mkdir(parents=True, exist_ok=True)
         self.source_extracted_base.mkdir(parents=True, exist_ok=True)
