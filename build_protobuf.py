@@ -19,22 +19,37 @@ class ProtobufPackage(Package):
     def configuration_script(self):
         if not self.windows:
             return self.main_source_directory_path / 'configure'
-        return None
+        return shutil.which('cmake')
 
     @property
     def arguments_to_configuration_script(self):
-        return super().arguments_to_configuration_script + [
-            '--disable-maintainer-mode',
-            '--disable-static'
+        if not self.windows:
+            return super().arguments_to_configuration_script + [
+                '--disable-maintainer-mode',
+                '--disable-static'
+            ]
+        return [
+            '-G', 'Visual Studio 15 2017',
+            '-A', 'x64',
+            '-DCMAKE_BUILD_TYPE=Release',
+            f'-DCMAKE_INSTALL_PREFIX={self.install_directory}',
+            f'{self.main_source_directory_path / "cmake"}'
         ]
 
 
     def run_build_command(self):
-        self.system(['make', f'-j{multiprocessing.cpu_count()}'],
-                    env=self.environment_for_build_command, cwd=self.build_directory_path)
+        if not self.windows:
+            super().run_build_command()
+        else:
+            self.system([self.configuration_script, '--build', '.', '--config', 'Release'],
+                        env=self.environment_for_build_command, cwd=self.build_directory_path)
+
 
     def run_install_command(self):
-        self.system(['make', 'install'],
+        if not self.windows:
+            super().run_build_command()
+        else:
+            self.system([self.configuration_script, '--install', '.'],
                     env=self.environment_for_build_command, cwd=self.build_directory_path)
 
 

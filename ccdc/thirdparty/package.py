@@ -43,6 +43,9 @@ class Package(object):
         return '10.12'
 
     def prepare_directories(self):
+        if not self.toolbase.exists() and self.macos:
+            subprocess.check_output(['sudo', 'mkdir', '-p', f'{self.toolbase}'])
+            subprocess.check_output(['sudo', 'chown', f'{os.environ["USER"]}', f'{self.toolbase}'])
         self.toolbase.mkdir(parents=True, exist_ok=True)
         self.source_downloads_base.mkdir(parents=True, exist_ok=True)
         self.source_extracted_base.mkdir(parents=True, exist_ok=True)
@@ -104,10 +107,13 @@ class Package(object):
             f'{self.source_builds_base / archive_name}', # the tar filename
             f'{self.install_directory.relative_to(self.toolbase / self.name)}',
         ]
-        if self.windows:
+        try:
+            self.system(command, cwd=self.toolbase / self.name) # keep the name + version directory in the archive, but not the package name directory
+        except subprocess.CalledProcessError as e:
+            if not self.windows:
+                raise e
             command.insert(1,'--force-local') 
-        self.system(command, cwd=self.toolbase / self.name # keep the name + version directory in the archive, but not the package name directory
-        )
+            self.system(command, cwd=self.toolbase / self.name) # keep the name + version directory in the archive, but not the package name directory
 
     @property
     def include_directories(self):
@@ -160,7 +166,10 @@ class Package(object):
 
         if self.windows:
             flags = f'-{flags}'
-            self.system(['tar', '--force-local', flags, str(path)], cwd=where)
+            try:
+                self.system(['tar', '--force-local', flags, str(path)], cwd=where)
+            except subprocess.CalledProcessError:
+                self.system(['tar', flags, str(path)], cwd=where)
         else:
             self.system(['tar', flags, str(path)], cwd=where)
 
