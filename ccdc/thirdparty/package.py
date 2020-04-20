@@ -7,6 +7,7 @@ import stat
 import shutil
 import tempfile
 import multiprocessing
+import getpass
 from pathlib import Path
 from distutils.version import StrictVersion
 
@@ -46,7 +47,7 @@ class Package(object):
     def prepare_directories(self):
         if not self.toolbase.exists() and not self.windows:
             subprocess.check_output(['sudo', 'mkdir', '-p', '/opt/ccdc'])
-            subprocess.check_output(['sudo', 'chown', f'{os.environ["USER"]}', '/opt/ccdc'])
+            subprocess.check_output(['sudo', 'chown', f'{getpass.getuser()}', '/opt/ccdc'])
         self.toolbase.mkdir(parents=True, exist_ok=True)
         self.source_downloads_base.mkdir(parents=True, exist_ok=True)
         self.source_extracted_base.mkdir(parents=True, exist_ok=True)
