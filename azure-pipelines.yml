@@ -10,6 +10,11 @@ jobs:
       scriptPath: build_protobuf.py
       #arguments: # Optional
     displayName: 'Create protobuf build'
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      ArtifactName: 'protobuf'
+      publishLocation: 'Container'
 
 - job: macOS
   pool:
@@ -24,6 +29,11 @@ jobs:
       scriptPath: build_protobuf.py
       #arguments: # Optional
     displayName: 'Create protobuf build'
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      ArtifactName: 'protobuf'
+      publishLocation: 'Container'
 
 - job: Windows
   pool:
@@ -39,6 +49,11 @@ jobs:
       scriptPath: build_protobuf.py
       #arguments: # Optional
     displayName: 'Create protobuf build'
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      ArtifactName: 'protobuf'
+      publishLocation: 'Container'
 
 
 # # Build on all three platforms
