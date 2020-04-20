@@ -102,7 +102,7 @@ class Package(object):
 
     def create_archive(self):
         archive_name = self.install_directory.name + '.tar.gz'
-        if 'BUILD_ARTIFACTSTAGINGDIRECTORY' in os.environ':
+        if 'BUILD_ARTIFACTSTAGINGDIRECTORY' in os.environ:
             archive_output_directory=Path(os.environ['BUILD_ARTIFACTSTAGINGDIRECTORY'])
         else:
             archive_output_directory = self.source_builds_base
