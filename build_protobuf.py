@@ -47,7 +47,7 @@ class ProtobufPackage(Package):
 
     def run_install_command(self):
         if not self.windows:
-            super().run_build_command()
+            super().run_install_command()
         else:
             self.system([self.configuration_script, '--install', '.'],
                     env=self.environment_for_build_command, cwd=self.build_directory_path)
