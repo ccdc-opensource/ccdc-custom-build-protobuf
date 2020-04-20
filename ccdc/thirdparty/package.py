@@ -102,11 +102,16 @@ class Package(object):
 
     def create_archive(self):
         archive_name = self.install_directory.name + '.tar.gz'
+        if 'BUILD_ARTIFACTSTAGINGDIRECTORY' in os.environ':
+            archive_output_directory=Path(os.environ['BUILD_ARTIFACTSTAGINGDIRECTORY'])
+        else:
+            archive_output_directory = self.source_builds_base
+        print(f'Creating {archive_name} in {archive_output_directory}')
         command = [
             'tar',
             '-zcf',
-            f'{self.source_builds_base / archive_name}', # the tar filename
-            f'{self.install_directory.relative_to(self.toolbase / self.name)}',
+            f'{ archive_output_directory / archive_name }', # the tar filename
+            f'{ self.install_directory.relative_to(self.toolbase / self.name) }',
         ]
         try:
             self.system(command, cwd=self.toolbase / self.name) # keep the name + version directory in the archive, but not the package name directory
