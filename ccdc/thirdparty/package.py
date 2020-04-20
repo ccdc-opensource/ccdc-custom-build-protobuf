@@ -15,7 +15,8 @@ class Package(object):
     '''Base for anything installable'''
     name = None
     version = None
-
+    _cached_sdkroot = None
+    
     @property
     def macos(self):
         return sys.platform == 'darwin'
