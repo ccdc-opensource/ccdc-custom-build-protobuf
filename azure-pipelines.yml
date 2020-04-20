@@ -2,19 +2,43 @@ jobs:
 - job: Linux
   pool:
     vmImage: 'ubuntu-latest'
-  container: rockdreamer/conan-gcc9-centos7:latest
+  container: rockdreamer/centos7-gcc9:latest
   steps:
-  - script: build_protobuf.py
+  - task: PythonScript@0
+    inputs:
+      scriptSource: 'filePath' # Options: filePath, inline
+      scriptPath: build_protobuf.py
+      #arguments: # Optional
+    displayName: 'Create protobuf build'
+
 - job: macOS
   pool:
     vmImage: 'macOS-latest'
   steps:
-  - script: build_protobuf.py
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '3.8'
+  - task: PythonScript@0
+    inputs:
+      scriptSource: 'filePath' # Options: filePath, inline
+      scriptPath: build_protobuf.py
+      #arguments: # Optional
+    displayName: 'Create protobuf build'
+
 - job: Windows
   pool:
     vmImage: 'windows-latest'
   steps:
-  - script: python3 build_protobuf.py
+
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '3.8'
+  - task: PythonScript@0
+    inputs:
+      scriptSource: 'filePath' # Options: filePath, inline
+      scriptPath: build_protobuf.py
+      #arguments: # Optional
+    displayName: 'Create protobuf build'
 
 
 # # Build on all three platforms
@@ -42,17 +66,6 @@ jobs:
 # # - checkout: self
 # #   persistCredentials: false
 # #   displayName: 'ensure hotfixes repo is checked out'
-
-# - task: UsePythonVersion@0
-#   inputs:
-#     versionSpec: '3.8'
-
-# - task: PythonScript@0
-#   inputs:
-#     scriptSource: 'filePath' # Options: filePath, inline
-#     scriptPath: build_protobuf.py
-#     #arguments: # Optional
-#   displayName: 'Create protobuf build'
 
 # # - task: ArchiveFiles@2
 # #   inputs:
