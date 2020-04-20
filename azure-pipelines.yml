@@ -2,7 +2,8 @@
 strategy:
   matrix:
     linux:
-      containerImage: ubuntu:14.04
+      imageName: 'ubuntu-18.04'
+      containerImage: rockdreamer/conan-gcc9-centos7:latest
       buildosname: 'linux'
       outputArchiveType: 'tar'
       outputArchiveExtension: 'tar.gz'
