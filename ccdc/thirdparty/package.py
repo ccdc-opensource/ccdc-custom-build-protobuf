@@ -159,6 +159,7 @@ class Package(object):
             raise AttributeError(f"Can't extract {path}")
 
         if self.windows:
+            flags = f'-{flags}'
             self.system(['tar', '--force-local', flags, str(path)], cwd=where)
         else:
             self.system(['tar', flags, str(path)], cwd=where)
