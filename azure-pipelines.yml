@@ -57,7 +57,7 @@ jobs:
 
 - job: WindowsVS2019
   pool:
-    vmImage: 'vs2019-win2019'
+    vmImage: 'windows-2019'
   variables:
     build_vs_version: '2019'  
   steps:
