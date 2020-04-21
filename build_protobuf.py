@@ -35,6 +35,7 @@ class ProtobufPackage(CMakeMixin, AutoconfMixin, Package):
             '-A', 'x64',
             '-DCMAKE_BUILD_TYPE=Release',
             f'-DCMAKE_INSTALL_PREFIX={self.install_directory}',
+            '-Dprotobuf_BUILD_SHARED_LIBS=ON',
             f'{self.main_source_directory_path / "cmake"}'
         ]
 
