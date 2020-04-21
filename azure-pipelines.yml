@@ -2,13 +2,14 @@ jobs:
 - job: Linux
   pool:
     vmImage: 'ubuntu-latest'
+  # We use a container to run the build as we must be compatible with centos7's older glibc
   container: rockdreamer/centos7-gcc9:latest
   steps:
+  # No need to setup specific python, the container's python3 will be used
   - task: PythonScript@0
     inputs:
-      scriptSource: 'filePath' # Options: filePath, inline
+      scriptSource: 'filePath'
       scriptPath: build_protobuf.py
-      #arguments: # Optional
     displayName: 'Create protobuf build'
   - task: PublishBuildArtifacts@1
     inputs:
@@ -25,9 +26,8 @@ jobs:
       versionSpec: '3.8'
   - task: PythonScript@0
     inputs:
-      scriptSource: 'filePath' # Options: filePath, inline
+      scriptSource: 'filePath'
       scriptPath: build_protobuf.py
-      #arguments: # Optional
     displayName: 'Create protobuf build'
   - task: PublishBuildArtifacts@1
     inputs:
@@ -35,19 +35,19 @@ jobs:
       ArtifactName: 'protobuf'
       publishLocation: 'Container'
 
-- job: Windows
+- job: Windows VS2017
   pool:
     vmImage: 'vs2017-win2016'
+  variables:
+    build_vs_version: '2017'  
   steps:
-
   - task: UsePythonVersion@0
     inputs:
       versionSpec: '3.8'
   - task: PythonScript@0
     inputs:
-      scriptSource: 'filePath' # Options: filePath, inline
+      scriptSource: 'filePath'
       scriptPath: build_protobuf.py
-      #arguments: # Optional
     displayName: 'Create protobuf build'
   - task: PublishBuildArtifacts@1
     inputs:
@@ -55,41 +55,22 @@ jobs:
       ArtifactName: 'protobuf'
       publishLocation: 'Container'
 
-
-# # Build on all three platforms
-# strategy:
-#   matrix:
-#     linux:
-#       buildosname: 'linux'
-#       outputArchiveType: 'tar'
-#       outputArchiveExtension: 'tar.gz'
-#     mac:
-#       imageName: 'macos-10.15'
-#       buildosname: 'macos'
-#       outputArchiveType: 'tar'
-#       outputArchiveExtension: 'tar.gz'
-#     windows:
-#       imageName: 'vs2017-win2016'
-#       buildosname: 'windows'
-#       outputArchiveType: 'zip'
-#       outputArchiveExtension: 'zip'
-
-# pool:
-#   vmImage: $(imageName)
-
-# steps:
-# # - checkout: self
-# #   persistCredentials: false
-# #   displayName: 'ensure hotfixes repo is checked out'
-
-# # - task: ArchiveFiles@2
-# #   inputs:
-# #     rootFolderOrFile: '$(System.DefaultWorkingDirectory)/output/miniconda3-$(miniconda_installer_version)-$(Build.BuildId)-$(buildosname)'
-# #     archiveFile: '$(Build.ArtifactStagingDirectory)/miniconda3-$(miniconda_installer_version)-$(Build.BuildId)-$(buildosname).$(outputArchiveExtension)' 
-# #     archiveType: '$(outputArchiveType)'
-
-# # - task: PublishBuildArtifacts@1
-# #   inputs:
-# #     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-# #     ArtifactName: 'miniconda-offline-installer'
-# #     publishLocation: 'Container'
+- job: Windows VS2019
+  pool:
+    vmImage: 'vs2019-win2019'
+  variables:
+    build_vs_version: '2019'  
+  steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '3.8'
+  - task: PythonScript@0
+    inputs:
+      scriptSource: 'filePath'
+      scriptPath: build_protobuf.py
+    displayName: 'Create protobuf build'
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      ArtifactName: 'protobuf'
+      publishLocation: 'Container'
