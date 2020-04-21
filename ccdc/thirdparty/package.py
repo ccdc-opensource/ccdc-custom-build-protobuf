@@ -102,18 +102,21 @@ class Package(object):
             return self.toolbase / self.name / f'{self.name}-{self.version}-{os.environ["BUILD_BUILDID"]}'
         return self.toolbase / self.name / f'{self.name}-{self.version}'
 
+    @property
+    def output_archive_filename(self):
+        return self.name + f'{self.name}-{self.version}-{sys.platform}.tar.gz'
+
     def create_archive(self):
-        archive_name = self.install_directory.name + '.tar.gz'
         if 'BUILD_ARTIFACTSTAGINGDIRECTORY' in os.environ:
             archive_output_directory = Path(
                 os.environ['BUILD_ARTIFACTSTAGINGDIRECTORY'])
         else:
             archive_output_directory = self.source_builds_base
-        print(f'Creating {archive_name} in {archive_output_directory}')
+        print(f'Creating {self.output_archive_filename} in {archive_output_directory}')
         command = [
             'tar',
             '-zcf',
-            f'{ archive_output_directory / archive_name }',  # the tar filename
+            f'{ archive_output_directory / self.output_archive_filename }',  # the tar filename
             f'{ self.install_directory.relative_to(self.toolbase / self.name) }',
         ]
         try:
