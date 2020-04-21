@@ -47,7 +47,8 @@ class Package(object):
     def prepare_directories(self):
         if not self.toolbase.exists() and not self.windows:
             subprocess.check_output(['sudo', 'mkdir', '-p', '/opt/ccdc'])
-            subprocess.check_output(['sudo', 'chown', f'{getpass.getuser()}', '/opt/ccdc'])
+            subprocess.check_output(
+                ['sudo', 'chown', f'{getpass.getuser()}', '/opt/ccdc'])
         self.toolbase.mkdir(parents=True, exist_ok=True)
         self.source_downloads_base.mkdir(parents=True, exist_ok=True)
         self.source_extracted_base.mkdir(parents=True, exist_ok=True)
@@ -104,23 +105,26 @@ class Package(object):
     def create_archive(self):
         archive_name = self.install_directory.name + '.tar.gz'
         if 'BUILD_ARTIFACTSTAGINGDIRECTORY' in os.environ:
-            archive_output_directory=Path(os.environ['BUILD_ARTIFACTSTAGINGDIRECTORY'])
+            archive_output_directory = Path(
+                os.environ['BUILD_ARTIFACTSTAGINGDIRECTORY'])
         else:
             archive_output_directory = self.source_builds_base
         print(f'Creating {archive_name} in {archive_output_directory}')
         command = [
             'tar',
             '-zcf',
-            f'{ archive_output_directory / archive_name }', # the tar filename
+            f'{ archive_output_directory / archive_name }',  # the tar filename
             f'{ self.install_directory.relative_to(self.toolbase / self.name) }',
         ]
         try:
-            self.system(command, cwd=self.toolbase / self.name) # keep the name + version directory in the archive, but not the package name directory
+            # keep the name + version directory in the archive, but not the package name directory
+            self.system(command, cwd=self.toolbase / self.name)
         except subprocess.CalledProcessError as e:
             if not self.windows:
                 raise e
-            command.insert(1,'--force-local') 
-            self.system(command, cwd=self.toolbase / self.name) # keep the name + version directory in the archive, but not the package name directory
+            command.insert(1, '--force-local')
+            # keep the name + version directory in the archive, but not the package name directory
+            self.system(command, cwd=self.toolbase / self.name)
 
     @property
     def include_directories(self):
@@ -174,7 +178,8 @@ class Package(object):
         if self.windows:
             flags = f'-{flags}'
             try:
-                self.system(['tar', '--force-local', flags, str(path)], cwd=where)
+                self.system(['tar', '--force-local',
+                             flags, str(path)], cwd=where)
             except subprocess.CalledProcessError:
                 self.system(['tar', flags, str(path)], cwd=where)
         else:
@@ -390,3 +395,17 @@ class AutoconfMixin(GnuMakeMixin, MakeInstallMixin, object):
     @property
     def configuration_script(self):
         return self.main_source_directory_path / 'configure'
+
+
+class CMakeMixin(Package):
+    @property
+    def configuration_script(self):
+        return shutil.which('cmake')
+
+    def run_build_command(self):
+        self.system([self.configuration_script, '--build', '.', '--config', 'Release'],
+                    env=self.environment_for_build_command, cwd=self.build_directory_path)
+
+    def run_install_command(self):
+        self.system([self.configuration_script, '--install', '.'],
+                    env=self.environment_for_build_command, cwd=self.build_directory_path)

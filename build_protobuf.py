@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 import shutil
 import multiprocessing
-from ccdc.thirdparty.package import Package
+from pathlib import Path
+from ccdc.thirdparty.package import Package, AutoconfMixin, CMakeMixin
 
 
-class ProtobufPackage(Package):
+class ProtobufPackage(CMakeMixin, AutoconfMixin, Package):
     '''protobuf library and compiler'''
     name = 'protobuf'
     version = '3.11.4'
@@ -19,7 +20,8 @@ class ProtobufPackage(Package):
     def configuration_script(self):
         if not self.windows:
             return self.main_source_directory_path / 'configure'
-        return shutil.which('cmake')
+        else:
+            return Path(shutil.which('cmake'))
 
     @property
     def arguments_to_configuration_script(self):
@@ -36,21 +38,17 @@ class ProtobufPackage(Package):
             f'{self.main_source_directory_path / "cmake"}'
         ]
 
-
     def run_build_command(self):
         if not self.windows:
-            super().run_build_command()
+            AutoconfMixin.run_build_command(self)
         else:
-            self.system([self.configuration_script, '--build', '.', '--config', 'Release'],
-                        env=self.environment_for_build_command, cwd=self.build_directory_path)
-
+            CMakeMixin.run_build_command(self)
 
     def run_install_command(self):
         if not self.windows:
-            super().run_install_command()
+            AutoconfMixin.run_install_command(self)
         else:
-            self.system([self.configuration_script, '--install', '.'],
-                    env=self.environment_for_build_command, cwd=self.build_directory_path)
+            CMakeMixin.run_install_command(self)
 
 
 def main():
