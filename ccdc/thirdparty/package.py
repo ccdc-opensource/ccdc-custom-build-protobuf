@@ -104,6 +104,8 @@ class Package(object):
 
     @property
     def output_archive_filename(self):
+        if 'BUILD_BUILDID' in os.environ:
+            return self.name + f'{self.name}-{self.version}-{os.environ["BUILD_BUILDID"]}-{sys.platform}.tar.gz'
         return self.name + f'{self.name}-{self.version}-{sys.platform}.tar.gz'
 
     def create_archive(self):
