@@ -31,7 +31,7 @@ class ProtobufPackage(CMakeMixin, AutoconfMixin, Package):
                 '--disable-static'
             ]
         return [
-            '-G', 'Visual Studio 15 2017',
+            '-G', f'Visual Studio {'16' if os.environ["BUILD_VS_VERSION"] == '2019' else '15'} {os.environ["BUILD_VS_VERSION"]}',
             '-A', 'x64',
             '-DCMAKE_BUILD_TYPE=Release',
             f'-DCMAKE_INSTALL_PREFIX={self.install_directory}',
