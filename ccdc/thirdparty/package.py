@@ -96,17 +96,26 @@ class Package(object):
             return Path('/opt/ccdc/third-party-sources/logs')
 
     @property
+    def output_base_name(self):
+        components = [
+            self.name,
+            self.version,
+        ]
+        if 'BUILD_BUILDID' in os.environ:
+            components.append(os.environ['BUILD_BUILDID'])
+        components.append(sys.platform)
+        if 'BUILD_VS_VERSION' in os.environ:
+            components.append(f'vs{os.environ["BUILD_VS_VERSION"]}')
+        return '-'.join(components)
+        
+    @property
     def install_directory(self):
         '''Return the canonical installation directory'''
-        if 'BUILD_BUILDID' in os.environ:
-            return self.toolbase / self.name / f'{self.name}-{self.version}-{os.environ["BUILD_BUILDID"]}'
-        return self.toolbase / self.name / f'{self.name}-{self.version}'
+        return self.toolbase / self.name / self.output_base_name
 
     @property
     def output_archive_filename(self):
-        if 'BUILD_BUILDID' in os.environ:
-            return f'{self.name}-{self.version}-{os.environ["BUILD_BUILDID"]}-{sys.platform}.tar.gz'
-        return f'{self.name}-{self.version}-{sys.platform}.tar.gz'
+        return f'{self.output_base_name}.tar.gz'
 
     def create_archive(self):
         if 'BUILD_ARTIFACTSTAGINGDIRECTORY' in os.environ:
