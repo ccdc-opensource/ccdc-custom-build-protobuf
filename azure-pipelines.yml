@@ -35,7 +35,7 @@ jobs:
       ArtifactName: 'protobuf'
       publishLocation: 'Container'
 
-- job: Windows VS2017
+- job: WindowsVS2017
   pool:
     vmImage: 'vs2017-win2016'
   variables:
@@ -55,7 +55,7 @@ jobs:
       ArtifactName: 'protobuf'
       publishLocation: 'Container'
 
-- job: Windows VS2019
+- job: WindowsVS2019
   pool:
     vmImage: 'vs2019-win2019'
   variables:
