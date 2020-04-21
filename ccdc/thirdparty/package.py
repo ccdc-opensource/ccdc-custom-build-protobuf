@@ -423,3 +423,14 @@ class CMakeMixin(Package):
     def run_install_command(self):
         self.system([self.configuration_script, '--install', '.'],
                     env=self.environment_for_build_command, cwd=self.build_directory_path)
+
+    @property
+    def visual_studio_generator_for_build(self):
+        if not "BUILD_VS_VERSION" in os.environ:
+            print('BUILD_VS_VERSION not set, defaulting to VS 2019')
+            return 'Visual Studio 16 2019'
+        if os.environ["BUILD_VS_VERSION"] == '2019':
+            return 'Visual Studio 16 2019'
+        if os.environ["BUILD_VS_VERSION"] == '2017':
+            return 'Visual Studio 15 2017'
+        raise Exception(f'Invalid value for BUILD_VS_VERSION: {os.environ["BUILD_VS_VERSION"]}')
